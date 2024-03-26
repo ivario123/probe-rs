@@ -48,6 +48,10 @@ impl FlashLoader {
     /// possibly by multiple memory regions.
     fn check_data_in_memory_map(&mut self, range: Range<u64>) -> Result<(), FlashError> {
         let mut address = range.start;
+        // NRF52840 fulhack
+        if address >= 0x0080_0000 && address <= 0x0084_0000{
+            address += 0x2000_0000 - 0x0080_0000;
+        }
         while address < range.end {
             match Self::get_region_for_address(&self.memory_map, address) {
                 Some(MemoryRegion::Nvm(region)) => address = region.range.end,
